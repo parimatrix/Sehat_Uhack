@@ -1,0 +1,417 @@
+<% include ./partials/header.ejs %>
+<% include ./partials/animation.ejs %>
+<% include ./partials/navbar.ejs %>
+  <script type="text/javascript" src="/jshggamify/jshg/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="/jshggamify/jshg/ParallelJS-CV.min.js"></script>
+  <script type="text/javascript" src="/jshggamify/jshg/compatibility.js"></script>
+  <script type="text/javascript" src="/jshggamify/test/helper.js"></script>
+  <script type="text/javascript" src="/jshggamify/cs3282/jshgseq.js"></script>
+  <link rel="stylesheet" type="text/css" href="/jshggamify/css/pure-min.css">
+  <link rel="stylesheet" type="text/css" href="/jshggamify/test/index.css">
+  <br><br>
+<% include ./partials/flash.ejs %>
+<br>
+    <div class="header">
+
+      <h1>ANALYSE AND PLAY</h1>
+      <h2>Coin Collect Game</h2>
+    </div>
+    <div class="content">
+      <h2 id="default-table" class="content-subhead">
+          <span id="stageDetected">Press learn afer run</span><br>
+
+        <a class="button-jshg button-start pure-button" id="startManualBut" onClick="runManualTest()">Run</a>
+        <a class="button-jshg button-stop pure-button" id="stopManualBut" onClick="stopManualTest()" style="display:none">Stop</a>
+        <a class="button-jshg button-start pure-button" id="learnManualBut" onClick="JSHG.learnSkinColor()" style="display:none">Learn</a>
+      </h2>
+      <div class="mannualTestArea">
+        <div id="webcameShownArea" style="float:left"></div>
+        <div id="gestureShownHere" style="float:right"></div>
+      </div>
+      <!--<div class="reportArea">-->
+        <!--<p id="performance"></p>-->
+        <!--<p id="gestureReportMessage"></p>-->
+      <!--</div>-->
+
+      <span id='xcoordinate'></span>
+      <span id='ycoordinate'></span>
+      	<br><br>
+      <center id='center'>
+		</center>
+
+		<center>
+		  Collect a 25 coins to win.<br>
+		  Try to lose as few coins as possible!
+		</center>
+
+    </div>
+
+    <script>
+
+    	var xcoordinate=[];
+    	var deviation = [];
+    	var devMed=[];
+    	var Median;
+
+
+    	function startGame(){
+    	var canvas = $("<canvas id='canvas' width='320' height='240'></canvas>");
+
+var mousex = 160,
+    mousey = 120;
+
+var finished = false;
+
+var score = 0,
+    coinslost = 0;
+
+canvas.appendTo('#center');
+
+var ctx = canvas.get(0).getContext("2d");
+
+var keydown = [];
+
+for(var i=0; i<128; i++)
+{
+  keydown[i] = false;
+}
+
+var Intervalend = setInterval(function(){
+  update();
+  draw();
+}, 1000/60);
+
+setInterval(function(){
+  if(Math.random()>0.7)
+  {
+  addCoin();
+  }
+}, 2000/30);
+
+var player = {
+  x: 32,
+  y: 120,
+  width: 32,
+  height: 32,
+  yspeed: 0
+};
+
+var gravity = .5;
+
+function draw()
+{
+  if (finished==false)
+  {
+  ctx.clearRect(0,0,320,240);
+  
+  coins.forEach(function(coin){
+    if (coin.active)
+    {
+    coin.draw();
+    }
+  });
+  
+  ctx.fillStyle = "red";
+  xcoordinate.push($('#xcoordinate').text());
+  ctx.fillRect($('#xcoordinate').text()-(player.width/2), player.y-(player.height/2), player.width, player.height);
+  
+  ctx.fillStyle = "black";
+  ctx.fillText("Score: " + score, 2, 10);
+  ctx.fillText("Coins Lost: " + coinslost, 2, 22);
+  }
+  else
+  {
+    ctx.clearRect(0,0,320,240);
+    ctx.fillText("You won with " + finishedcoins + " coins lost!", 80, 120);
+    stopManualTest();
+    //console.log(deviation);
+  }
+  
+}
+
+var finishedcoins;
+
+function update()
+{
+  if (finished)
+  {
+   	for(let i=0;i<deviation.length;i++){
+   		let temp =0;
+   		let j;
+   		for(j=0;j<11;j++){
+   			temp+=deviation[i+j];
+   		}
+   		temp=temp/11;
+   		devMed.push(temp);
+   		i=i+j-1;
+   	}
+   	let temp=0;
+   	for(let i =0;i<devMed.length;i++){
+   		temp+=devMed[i];
+   	}
+   	temp=temp/devMed.length;
+   	console.log(temp);
+   	clearInterval(Intervalend);
+   	$.post('/receivejson',{data: temp},(stage)=>{
+   	    console.log(stage);
+
+   	    $('#stageDetected').text(stage==0 ? "You do not parkinsons disease" : "Your parkinsons disease stage : "+stage);
+
+    })
+   	stopManualTest();
+
+
+  }
+  if (score>=25)
+  {
+    finished = true;
+    finishedcoins = coinslost;
+  }
+  gravity+=.5;
+  player.y += gravity;
+  player.y -= player.yspeed;
+  
+  if (player.y>240-16)
+  {
+    gravity = 0;
+    player.yspeed = 0;
+    player.y=240-16;
+  }
+  
+  coins.forEach(function(coin){
+    if(coin.active)
+    {
+    coin.update();
+    }
+  });
+  
+  if (keydown[32])
+  {
+    if (gravity==0)
+    {
+      player.yspeed = 10;
+    }
+  }
+  
+}
+
+var coins = [];
+
+function addCoin()
+{
+  var coin = {
+    active: true,
+    x: Math.random()*320,
+    y: -16,
+    width: 8,
+    height: 16,
+    gravity: 0.5,
+    draw: function(){
+     
+      ctx.fillStyle = "yellow";
+      ctx.fillRect(this.x, this.y, this.width, this.height);
+      
+    },
+    
+    update: function(){
+     
+      this.gravity+=.5;
+      this.y+=this.gravity;
+      
+      if (this.gravity>3)
+      {
+        this.gravity = 3;
+      }
+      
+      if(collides(this,player))
+      {
+        score++;
+        let f=this.x;
+        let i = xcoordinate.length-1;
+        for(let j = 0;j<=10;j++){
+        	deviation.push(Math.abs(xcoordinate[i-j]-f));
+        }
+        this.active = false;
+      }
+      
+      if(this.y>240)
+      {
+        this.active = false;
+        coinslost++;
+      }
+      
+    }
+  };
+  
+  coins.push(coin);
+  
+}
+
+$(document).keypress(function(event){
+  keydown[event.which] = true;
+});
+
+$(document).keyup(function(event){
+  keydown[event.which] = false;
+});
+
+function collides(a, b) {
+  
+  if(b==player)
+  {
+    b = {
+
+      x: $('#xcoordinate').text()-16,
+      y: player.y-16,
+      width: player.width,
+      height: player.height
+    }
+  }
+  
+  return a.x < b.x + b.width &&
+         a.x + a.width > b.x &&
+         a.y < b.y + b.height &&
+         a.y + a.height > b.y;
+}
+
+$('#canvas').mousedown(function(e){
+  if (gravity==0)
+    {
+      player.yspeed = 12;
+    }
+  
+  addCoin();
+});
+
+/*$("#canvas").mousemove(function(e){
+
+  mousex = e.pageX-this.offsetLeft;  
+  mousey = e.pageY-this.offsetTop;
+  
+  player.x = e.pageX-this.offsetLeft;
+  console.log("playerx:",player.x);
+});*/
+/*console.log("Hello:",$('#xcoordinate').text());
+
+$('#xcoordinate').bind("DOMSubtreeModified", movehand);
+
+function movehand(){
+	console.log($('#xcoordinate').text()%320);
+
+	player.x = (($('#coordinate').text())%320);
+}*/
+
+
+}
+
+        function runManualTest() {
+            $("#startManualBut").hide();
+            $("#stopManualBut").show();
+            $("#learnManualBut").show();
+            var width = 420, height = 300;
+            var centralRatio = 1/3;
+            var nFrame = 0;
+            var elapsed = 0;
+            var lastTime = 0;
+            var actionReporter = function(gesture) {
+                if (nFrame > 0) {
+                    elapsed += new Date().getTime() - lastTime;
+                }
+                if (elapsed > 0) {
+                    var gestureFPS = Math.floor(nFrame/(elapsed/1000)) + " fps";
+                    var mainFPS = Math.floor(JSHG.performance_.nFrame/(JSHG.performance_.elapsed/1000)) + " fps";
+//                    $("#performance").html("Main window runs at " + mainFPS + ", Gesture Recognizer runs at " + gestureFPS);
+                }
+
+                $('#xcoordinate').text(gesture.handPos[0]);
+
+                $('#ycoordinate').text(gesture.handPos[1]);
+//                $("#gestureReportMessage").html("<pre><code>"+JSON.stringify(gesture, null, 4)+"</code></pre>");
+                lastTime = new Date().getTime();
+                nFrame++;
+            }
+            if (!JSHG.isInitialized()) {
+                JSHG.init({
+                    "actionCallback": actionReporter, 
+                    "learnDivId": "webcameShownArea",
+                    "gestureDivId": "gestureShownHere",
+                    "settings": {
+                        "cameraWidth": width,
+                        "cameraHeight": height,
+                        "gestureDisplayWidth": width,
+                        "gestureDisplayHeight": height,
+                        "centralAreaRatio": centralRatio,
+                        "learningCountDown": 5,
+                        "debugMode": true
+                    }
+                });
+            }	
+            JSHG.run();
+            startGame();
+
+        }
+
+        function stopManualTest() {
+            $("#startManualBut").show();
+            $("#stopManualBut").hide();
+            $("#learnManualBut").hide();
+            JSHG.stop();
+        }
+        function systemFlowTest() {
+            var count = 0;
+            var nTestCases = 10;
+            var width = 420, height = 300;
+            var centralRatio = 1/3;
+            var testCases = new Array(nTestCases)
+            testCases[0] = new JSHG.HandGesture(false, false, false, false, 0, [-1, -1]); // Unable to regconize
+            testCases[1] = new JSHG.HandGesture(true, false, true, false, 1, [0, 0]); // topLeft
+            testCases[2] = new JSHG.HandGesture(false, true, true, false, 2, [width, 0]); // topRight
+            testCases[3] = new JSHG.HandGesture(true, false, false, true, 3, [0, height]); // bottomLeft
+            testCases[4] = new JSHG.HandGesture(true, false, false, true, 4, [width, height]); // bottomRight
+            testCases[5] = new JSHG.HandGesture(false, false, false, false, 4, [width/2, height/2]); // middle point
+            testCases[6] = new JSHG.HandGesture(true, false, false, false, 5, [100, height/2]); // Left
+            testCases[7] = new JSHG.HandGesture(false, true, false, false, 5, [300, height/2]); // Right
+            testCases[8] = new JSHG.HandGesture(false, false, true, false, 5, [width/2, 90]); // Up
+            testCases[9] = new JSHG.HandGesture(false, false, false, true, 5, [width/2, 210]); // down
+            var systemFlowActionMapper = function(gesture) {
+                if (count >= nTestCases) {
+                    JSHG.delete();
+                    return;
+                }
+                console.log(gesture);
+                if (testCases[count].equals(gesture)) {
+                    $("#systemFlowTestResult").append("<font color='#4682B4'>Pass</font> test "+count+"<br>")
+                } else {
+                    $("#systemFlowTestResult").append("<font color='#8B0000'>Fail</font> test "+count+"<br>")
+                }
+                count++;    
+            }
+            if (JSHG.isInitialized()) {
+                stopManualTest();
+                JSHG.delete();
+            }
+            JSHG.init({
+                "actionCallback": systemFlowActionMapper, 
+                "learnDivId": "learnArea",
+                "settings": {
+                    "cameraWidth": width,
+                    "cameraHeight": height,
+                    "gestureDisplayWidth": width,
+                    "gestureDisplayHeight": height,
+                    "centralAreaRatio": centralRatio,
+                    "workerFilePath":"testworker.js"
+                }
+            });
+            JSHG.run();
+            $("#systemFlowTestResult").html("");
+        }
+    </script>
+<% include ./partials/footer.ejs %>
+<!--closing tag of div with id=box which is opened in animation.ejs -->
+</div>
+<link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Luckiest+Guy" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Graduate" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Dancing+Script" rel="stylesheet">
+</body>
+</html>

@@ -1,0 +1,37 @@
+<% include ./partials/header.ejs %>
+<% include ./partials/animation.ejs %>
+<% include ./partials/navbar.ejs %>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Montserrat|Raleway|Roboto" rel="stylesheet">
+<style>
+    canvas{border:5px solid #0c9;}
+</style>
+<br><br><br><br>
+<% include ./partials/flash.ejs %>
+    <center> 
+    	<h4 id="winner">Drag mouse to draw.</h4>
+    	<canvas id="canvas" width=300 height=300></canvas>
+  	
+    	<div style="width: 700px;">
+			<canvas id="myChart"></canvas>
+		</div>
+  	</center>
+
+<% include ./partials/footer.ejs %>
+<!--closing tag of div with id=box which is opened in animation.ejs -->
+</div>
+
+<link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Luckiest+Guy" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Graduate" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Dancing+Script" rel="stylesheet">
+
+<!--<link rel="stylesheet" href="/css/mouse.css">-->
+<script type="text/javascript" src="/js/mouse.js"></script>
+<script type="text/javascript" src="/js/mousechartfinal.js"></script>
+<script src="/js/index.js"></script>
+</body>
+</html>
+

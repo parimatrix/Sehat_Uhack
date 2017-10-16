@@ -1,0 +1,144 @@
+<% include ./partials/header.ejs %>
+<% include ./partials/navbar.ejs %>
+
+<br><br><br><br><br>
+<% include ./partials/flash.ejs %>
+
+<div class="ui container" id="outerbox">
+
+    <div class="ui twelve column centered grid">
+
+        <div class="five wide column" ><!--style="border: 1px solid black"-->
+            <div id="sendBox">
+                <h3 class="ui dividing header">Chat</h3>
+                <div class="ui comments" id="messages">
+                </div>
+
+                    <div class="ui input">
+                        <input type="text" placeholder="Send message" id="msgtxt">
+                    </div>
+
+                    <button class="ui button red inverted" type="button" id="sendmsg" data-tooltip="Send message" data-position="bottom center">
+                        <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                    </button>
+
+                    <button class="ui button red inverted" type="button" id="clearButton" data-tooltip="Clear Chat" data-position="bottom center">
+                        <i class="fa fa-trash"></i>
+                    </button>
+
+            </div>
+        </div>
+
+        <div class="seven wide column"> <!--style="border: 1px solid red"-->
+
+            <div id="top_banner">
+                <div class="ui seven column row" id="introtag">
+                    <div class="five wide column">
+                        <p class="typo">Hi <%= currentUser.username%></p>
+                        <p class="typo">Start Connecting</p>
+                    </div>
+                </div>
+
+                <div class="ui seven column row"> <!-- style="border: 1px solid purple"-->
+                    <div class="column"> <!-- style="border: 1px solid orange"-->
+                        <div class="ui transparent big input">
+                            <input type="text" placeholder="Username to connect to" id="peerid">
+                        </div>
+                        <button class="ui button circular icon huge" id="buttonpeer"><i class="icon connectdevelop"></i></button>
+                        <button class="ui button circular icon huge" id="callpeer"><i class="icon call"></i></button>
+                        <button class="ui button circular icon huge" id="disconnectpeer"><i class="icon unlinkify"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui seven column row" id="step3">   <!--style="border: 1px solid purple"-->
+                <p class="typo2">In call with: <span id="their-id"></span> <button class="ui red button circular icon large" id="endcall"><i class="icon call"></i></button></p>
+            </div>
+
+            <div id="vid-container">
+                <video autoplay id="receivedvid"></video>
+                <video id="myvid" autoplay muted="true" width="250px"></video>
+            </div>
+        </div>
+    </div>
+</div>
+<br><br>
+
+<!--Clear Chat Modal-->
+<div class="ui basic modal clearChat">
+    <div class="ui icon header">
+        <i class="archive icon" style="color: #fc4c4f"></i>
+        Delete All Messages
+    </div>
+    <div class="content">
+        <p style="text-align: center">Are you sure that you want to delete the chat messages permanently ?</p>
+    </div>
+    <div class="actions">
+        <div class="ui red cancel inverted button">
+            <i class="remove icon"></i>
+            No
+        </div>
+        <div class="ui green ok inverted button" id="clear">
+            <i class="checkmark icon"></i>
+            Yes
+        </div>
+    </div>
+</div>
+
+<!--Accept Call Modal-->
+<div class="ui basic modal acceptCall">
+    <div class="ui icon header">
+        <i class="call icon" style="color: teal"></i>
+        Incoming Video Call
+    </div>
+    <div class="content">
+        <p style="text-align: center">Call from <span id="callOpposite"></span></p>
+    </div>
+    <div class="actions">
+        <div class="ui red cancel inverted button" id="rejectCall">
+            <i class="remove icon"></i>
+            Reject
+        </div>
+        <div class="ui green ok inverted button" id="acceptcall">
+            <i class="checkmark icon"></i>
+            Accept
+        </div>
+    </div>
+</div>
+
+<!--Warning Connect Modal-->
+<div class="ui basic modal warningConnect">
+    <div class="ui icon header">
+        <i class="warning sign icon" style="color: #fc4c4f"></i>
+        Warning !
+    </div>
+    <div class="content">
+        <p style="text-align: center">You cannot connect to yourself. Connect to some other user.</p>
+    </div>
+    <div class="actions">
+        <div class="ui red cancel inverted button" id="rejectCall">
+            <i class="remove icon"></i>
+            Ok
+        </div>
+    </div>
+</div>
+
+<% include ./partials/footer.ejs%>
+
+<script src="/js/peer.js"></script>
+<script>
+   var peer = new Peer('<%= currentUser._id %>', {host: '192.168.43.174',port: <%= Port%>,path :'/peerjs',secure:true});
+   console.log(peer);
+   var peerID;
+   var myusername;
+   peer.on('open',(id)=>{
+      console.log("My peer id is :" + id);
+      peerID = id;
+      myusername = '<%= currentUser.username%>';
+   });
+</script>
+<link rel="stylesheet" href="/css/chat.css">
+<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+<script src="/js/chat_script.js"></script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<% include ./partials/header.ejs %>
+<% include ./partials/animation.ejs %>
+<% include ./partials/navbar.ejs %>
+<style>
+    @import url('https://fonts.googleapis.com/css?family=Roboto');
+    #header {
+        font-family: 'Raleway', sans-serif;
+        color: #02B3E4;
+        text-align: center;
+        font-size: 40px;
+        text-align: center;
+    }
+    .bluecard {
+        -webkit-box-shadow: 0px 4px 22px 2px rgba(0,0,0,0.4);
+        -webkit-transition: all .3s ease-in-out;
+        cursor: pointer;
+        text-align: center;
+        display: inline-block;
+        position: relative;
+        background: #5684D2;
+        width: 250px;
+        height: 300px;
+        margin-top: 15px;
+        margin-left: 5%;
+        border-radius: 5px;
+        margin-right: 5%;
+        background: linear-gradient(to bottom, #5684D2 80%, #EF0D33 50%);
+        background-size: 100% 200%;
+        background-position:top;
+        vertical-align: top;
+    }
+    .bluecard:hover {
+        -webkit-transform:scale(.95);
+        background-position: bottom;
+    }
+    .bluecard p {
+        color: white;
+        font-family: 'Roboto', sans-serif;
+        font-size: 1.9em;
+        font-weight: lighter;
+    }
+    .bluecard img {
+        width: 150px;
+        height: 150px;
+        margin-top: 20px;
+    }
+    .secondchild {
+        background: linear-gradient(to bottom, #FBAD8C 80%, #EF0D33 50%);
+        background-size: 100% 200%;
+        background-position: top;
+    }
+</style>
+<br><br>
+<div class="ui inverted vertical masthead center aligned segment" style="background-image: url('https://cdn.pixabay.com/photo/2016/10/26/23/14/form-1772949_960_720.jpg'); background-size: cover">
+    <% include ./partials/flash.ejs %>
+    <div class="ui text container" style="color: white">
+        <h1 class="ui inverted header" id="companyName" style="font-family: 'Luckiest Guy', cursive">
+            SEHAT
+        </h1>
+        <h2 class="handwriteFont">PLAY AND DETECT IF YOU HAVE PARKINSONS</h2>
+        <!--<div class="ui huge primary button">Get Started <i class="right arrow icon"></i></div>-->
+    </div>
+</div>
+<br><br>
+<p id="header">Dive into a brighter tomorrow !</p>
+<center>
+    <div class="bluecard">
+        <img src="/img/sk3.png"><br>
+        <p><a href="/chat">Video Chat</a></p>
+    </div>
+
+    <div class="bluecard secondchild">
+        <img src="/img/sk3.png"><br>
+        <p><a href="/mouse">Mouse Game exercise</a></p>
+    </div>
+
+    <div class="bluecard">
+        <img src="/img/sk3.png"><br>
+        <p><a href="/handtrack">Hand Track game</a></p>
+    </div>
+</center>
+<br><br>
+<% include ./partials/footer.ejs %>
+<!--closing tag of div with id=box which is opened in animation.ejs -->
+</div>
+
+<link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Luckiest+Guy" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Graduate" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Dancing+Script" rel="stylesheet">
+
+<link rel="stylesheet" href="/css/index.css">
+<script src="/js/index.js"></script>
+</body>
+</html>
